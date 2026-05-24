@@ -1,4 +1,6 @@
 # composer — offline Quantum Composer (stripped)
+<img width="974" height="786" alt="Screenshot 2026-05-24 at 12 00 16 pm" src="https://github.com/user-attachments/assets/13205b63-c223-46fe-9267-52a3913f6e7a" />
+
 
 Minimal offline dev surface inspired by [IBM Quantum Composer](https://quantum.cloud.ibm.com/composer), tuned for fast iteration before paid QPU/sim time.
 
