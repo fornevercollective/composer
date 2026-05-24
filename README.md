@@ -1,6 +1,12 @@
-# composerIBM — offline Quantum Composer (stripped)
+# composer — offline Quantum Composer (stripped)
 
 Minimal offline dev surface inspired by [IBM Quantum Composer](https://quantum.cloud.ibm.com/composer), tuned for fast iteration before paid QPU/sim time.
+
+| | |
+|---|---|
+| **Live (GitHub Pages)** | [fornevercollective.github.io/composer](https://fornevercollective.github.io/composer/) |
+| **Repository** | [github.com/fornevercollective/composer](https://github.com/fornevercollective/composer) |
+| **Local git clone** | `/Users/qbit/dev/composer` |
 
 ## Integrations
 
@@ -59,11 +65,16 @@ RNG runs in browser and Python so consumers see the same numbers.
 
 ## Quick start
 
+**Git repo (canonical):**
+
 ```bash
-cd /Users/qbit/models/chat/composerIBM
+git clone https://github.com/fornevercollective/composer.git /Users/qbit/dev/composer
+cd /Users/qbit/dev/composer
 ./scripts/dev-server.sh
 # → http://127.0.0.1:9470/
 ```
+
+Same tree is also mirrored at `/Users/qbit/models/chat/composerIBM` for Cursor sessions.
 
 Open μgrad beside it (`?noauto` recommended):
 
@@ -71,7 +82,7 @@ Open μgrad beside it (`?noauto` recommended):
 open /Users/qbit/dev/mueee/ugrad-r0.html?noauto
 ```
 
-In μgrad: `train` → `quantum export`. In composerIBM: **Import from μgrad** or paste QASM.
+In μgrad: `train` → `quantum export`. In composer: **Import from μgrad** or paste QASM.
 
 ## Stack
 
