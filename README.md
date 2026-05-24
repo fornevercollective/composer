@@ -8,6 +8,17 @@ Minimal offline dev surface inspired by [IBM Quantum Composer](https://quantum.c
 | **Repository** | [github.com/fornevercollective/composer](https://github.com/fornevercollective/composer) |
 | **Local git clone** | `/Users/qbit/dev/composer` |
 
+### Enable GitHub Pages (one-time)
+
+If the live URL returns **404**, Pages is not enabled yet:
+
+1. Push the repo (includes `.github/workflows/pages.yml` and `.nojekyll`).
+2. On GitHub: **Settings → Pages → Build and deployment → Source** → choose **GitHub Actions**.
+3. **Actions** tab → run **Deploy GitHub Pages** (or push to `main` to trigger it).
+4. After the workflow succeeds, the site is at `https://fornevercollective.github.io/composer/` (may take 1–2 minutes).
+
+Alternative (no Actions): **Settings → Pages → Source** → **Deploy from a branch** → `main` / `/Minimum `(root)`.
+
 ## Integrations
 
 | Surface | Role |
