@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "portals": [
+    {
+      "id": "ibm-quantum",
+      "name": "IBM Quantum Platform",
+      "url": "https://quantum.cloud.ibm.com/",
+      "composer": "https://quantum.cloud.ibm.com/composer",
+      "formats": ["openqasm2", "openqasm3"],
+      "defaultBackend": "ibm_torino",
+      "notes": "Paste QASM in Composer or use Qiskit Runtime job from exported manifest"
+    },
+    {
+      "id": "ibm-miami",
+      "name": "ibm_miami (Nighthawk r1)",
+      "defaultBackend": "ibm_miami",
+      "formats": ["openqasm2"],
+      "notes": "Use μgrad: quantum miami export for topology-aware QASM 2.0"
+    },
+    {
+      "id": "local-aer",
+      "name": "Local Aer (offline)",
+      "command": "python3 python/sim_local.py --qasm pipeline/last.qasm",
+      "formats": ["openqasm2", "openqasm3"]
+    },
+    {
+      "id": "mu-eee-gutter",
+      "name": "quantum-gutter (prefix lane)",
+      "url": "https://qbitos.github.io/mu.eee/quantum-gutter.html",
+      "bridge": "quantum-prefixes"
+    },
+    {
+      "id": "goldie-waveform",
+      "name": "QPU Goldie waveform results",
+      "url": "https://qbitos.github.io/mu.eee/qpu-goldie-results.html",
+      "bridge": "quantum-loopback"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>composerIBM — Bloch dual lab</title>
+<link rel="stylesheet" href="styles/bloch-lab.css?v=2">
+</head>
+<body>
+<div id="app">
+  <header id="hdr">
+    <span class="title">Bloch dual lab</span>
+    <span style="color:var(--dim)">exact trajectory · inverse · antimatter · magnetic wave</span>
+    <span class="spacer"></span>
+    <a href="index.html">← Composer</a>
+    <a href="bloch-viewer.html">Viewer</a>
+    <button type="button" id="btn-import">Import QASM</button>
+    <button type="button" id="btn-recompute">Recompute</button>
+    <button type="button" id="btn-spin">Animate B(t)</button>
+  </header>
+
+  <main id="viz">
+    <canvas id="cv-dual"></canvas>
+  </main>
+
+  <aside id="controls">
+    <h2>Exact point on S²</h2>
+    <label>θ <input id="sl-theta" type="range" min="0" max="3.14159" step="0.01" value="1.2"></label>
+    <label>φ <input id="sl-phi" type="range" min="0" max="6.28318" step="0.01" value="0.8"></label>
+
+    <h2>Trajectory</h2>
+    <label>mode
+      <select id="traj-mode">
+        <option value="qasm">QASM gate chain (q[0])</option>
+        <option value="hamiltonian">Hamiltonian ω·σ</option>
+        <option value="geodesic">Geodesic → inverse</option>
+      </select>
+    </label>
+    <textarea id="lab-qasm" spellcheck="false" placeholder="OPENQASM 3.0; …"></textarea>
+
+    <h2>Hamiltonian ω (rad/s)</h2>
+    <label>ωx <input id="sl-ox" type="range" min="-2" max="2" step="0.05" value="0.4"></label>
+    <label>ωy <input id="sl-oy" type="range" min="-2" max="2" step="0.05" value="0.3"></label>
+    <label>ωz <input id="sl-oz" type="range" min="-2" max="2" step="0.05" value="0.85"></label>
+
+    <h2>Magnetic coupling (inverse sphere)</h2>
+    <label>B₀ <input id="sl-B" type="range" min="0" max="3" step="0.05" value="1"></label>
+    <label>ω_B <input id="sl-Bw" type="range" min="0.1" max="8" step="0.1" value="2"></label>
+    <label>J (exchange) <input id="sl-J" type="range" min="0" max="1" step="0.02" value="0.35"></label>
+    <label>t <input id="sl-time" type="range" min="0" max="12.56" step="0.05" value="0"></label>
+    <label><input id="chk-animate" type="checkbox" hidden> </label>
+
+    <h2>Equations (live)</h2>
+    <div id="eq-panel"></div>
+    <div id="lab-log"></div>
+  </aside>
+</div>
+
+<script src="js/bloch-math.js"></script>
+<script src="js/bloch-dual.js"></script>
+<script src="js/bloch-trajectory.js"></script>
+<script src="js/bloch-render.js?v=2"></script>
+<script src="js/bloch-lab.js"></script>
+</body>
+</html>

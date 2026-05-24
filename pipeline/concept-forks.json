@@ -1,0 +1,140 @@
+{
+  "version": 2,
+  "description": "Bloch-related tangents and forks for detection training and AI steering. Google Images chips + μeee corpus (ugrad-r0, uvqbit, kbatch, hexcast-bloch-bridge).",
+  "trending_fields": {
+    "qec_hardware": {
+      "rank": 1,
+      "title": "Quantum Error Correction & Hardware Topologies",
+      "blurb": "Scaling physical qubits into logical, stable, and fault-tolerant processors."
+    },
+    "pqc_qday": {
+      "rank": 2,
+      "title": "Post-Quantum Cryptography (PQC) & Q-Day Prep",
+      "blurb": "Upgrading internet infrastructure to withstand quantum decryption threats."
+    },
+    "quantum_internet": {
+      "rank": 3,
+      "title": "Quantum Internet & Entanglement Distribution",
+      "blurb": "Utilizing QKD via space and fiber networks; entanglement links between nodes."
+    }
+  },
+  "provenance": {
+    "google_images": {
+      "query": "quantum bloch",
+      "dom_path": "#hdtb-sc .PHj8of .IUOThf[role=list]",
+      "captured": "2026-05-18"
+    },
+    "mueee": {
+      "paths": [
+        "ugrad-r0.html — drawBlochSphere, weightsToBlochAngles, bloch-state BroadcastChannel",
+        "uvqbit.html — bloch-strip, gp-bloch, state tomography, Q-sphere, entanglement tests",
+        "kbatch-main.js — quantum-physics + tomography word capsules",
+        "hexcast-bloch-bridge.js — D-Wave Source/Target/Detector Bloch readout"
+      ]
+    }
+  },
+  "roots": {
+    "quantum bloch": {
+      "aliases": ["bloch quantum", "quantum bloch sphere", "bloch"],
+      "chips": [
+        { "id": "ac-stark", "label": "Ac stark", "aliases": ["AC Stark", "AC Stark shift"], "relation": "refinement", "rank": 1, "steer_weight": 0.92, "trending_field": "qec_hardware", "source": "google_images", "parent": "stark-effect" },
+        { "id": "bloch-sphere", "label": "Bloch sphere", "aliases": ["Bloch vector", "Bloch ball"], "relation": "core", "rank": 2, "steer_weight": 1.0, "trending_field": "qec_hardware", "source": "google_images", "parent": "quantum bloch" },
+        { "id": "floquet", "label": "Floquet", "aliases": ["Floquet theory", "periodic driving"], "relation": "refinement", "rank": 3, "steer_weight": 0.88, "trending_field": "qec_hardware", "source": "google_images", "parent": "floquet-bloch" },
+        { "id": "optical-pumping", "label": "Optical pumping", "aliases": ["spin polarization"], "relation": "tangent", "rank": 4, "steer_weight": 0.75, "trending_field": "qec_hardware", "source": "google_images", "parent": "quantum bloch" },
+        { "id": "ultracold-molecules", "label": "Ultracold molecules", "relation": "fork", "rank": 5, "steer_weight": 0.62, "trending_field": "qec_hardware", "source": "google_images", "parent": "quantum bloch" },
+        { "id": "stark-shift", "label": "Stark shift", "relation": "tangent", "rank": 6, "steer_weight": 0.85, "trending_field": "qec_hardware", "source": "google_images", "parent": "stark-effect" },
+        { "id": "stark-effect", "label": "Stark effect", "relation": "tangent", "rank": 7, "steer_weight": 0.86, "trending_field": "qec_hardware", "source": "google_images", "parent": "quantum bloch" },
+        { "id": "bloch-oscillations", "label": "Bloch oscillations", "aliases": ["Wannier-Stark ladder"], "relation": "tangent", "rank": 8, "steer_weight": 0.8, "trending_field": "qec_hardware", "source": "google_images", "parent": "bloch-sphere" },
+        { "id": "rydberg", "label": "Rydberg", "aliases": ["Rydberg blockade"], "relation": "fork", "rank": 9, "steer_weight": 0.78, "trending_field": "qec_hardware", "source": "google_images", "parent": "rydberg-atoms" },
+        { "id": "floquet-bloch", "label": "Floquet bloch", "aliases": ["Floquet-Bloch", "dressed Bloch"], "relation": "refinement", "rank": 10, "steer_weight": 0.9, "trending_field": "qec_hardware", "source": "google_images", "parent": "floquet" },
+        { "id": "domain-wall", "label": "Domain wall", "relation": "fork", "rank": 11, "steer_weight": 0.55, "trending_field": "qec_hardware", "source": "google_images", "parent": "quantum bloch" },
+        { "id": "quantum-dot", "label": "Quantum dot", "aliases": ["QD"], "relation": "fork", "rank": 12, "steer_weight": 0.7, "trending_field": "qec_hardware", "source": "google_images", "parent": "quantum-computing" },
+        { "id": "quantum-computing", "label": "Quantum computing", "aliases": ["gate-based QC"], "relation": "platform", "rank": 13, "steer_weight": 0.95, "trending_field": "qec_hardware", "source": "google_images", "parent": "quantum bloch" },
+        { "id": "rydberg-atoms", "label": "Rydberg atoms", "aliases": ["Rydberg array"], "relation": "fork", "rank": 14, "steer_weight": 0.77, "trending_field": "qec_hardware", "source": "google_images", "parent": "rydberg" },
+        { "id": "frequency-spectrum", "label": "Frequency spectrum", "aliases": ["Frequency Sp", "FFT spectrum"], "relation": "tangent", "rank": 15, "steer_weight": 0.65, "trending_field": "qec_hardware", "source": "google_images", "parent": "quantum bloch" }
+      ],
+      "composer_hooks": {
+        "qasm_gates": ["h", "x", "y", "z", "rz", "rx", "ry", "cz", "measure"],
+        "bloch_panel": true,
+        "preflight_backends": true,
+        "gutter_prefixes": ["n:", "+1:", "+2:", "+3:", "0:", "-1:"]
+      }
+    }
+  },
+  "mueee_nodes": [
+    { "id": "bloch-state-channel", "label": "bloch-state BroadcastChannel", "aliases": ["quantum-loopback", "L3 Iron Line"], "relation": "platform", "steer_weight": 0.88, "trending_field": "quantum_internet", "source": "ugrad-r0.html", "parent": "bloch-sphere" },
+    { "id": "weights-to-bloch", "label": "weightsToBlochAngles", "aliases": ["μgrad weights → θ φ", "VQC state map"], "relation": "tangent", "steer_weight": 0.86, "trending_field": "qec_hardware", "source": "ugrad-r0.html", "parent": "bloch-sphere" },
+    { "id": "bloch-overhead-slice", "label": "overhead XZ slice", "aliases": ["c-slice", "qstate slice"], "relation": "tangent", "steer_weight": 0.72, "trending_field": "qec_hardware", "source": "ugrad-r0.html", "parent": "bloch-sphere" },
+    { "id": "export-bloch-svg", "label": "export Bloch SVG", "relation": "platform", "steer_weight": 0.7, "trending_field": "qec_hardware", "source": "ugrad-r0.html", "parent": "bloch-sphere" },
+    { "id": "bloch-animate", "label": "bloch animate spin", "relation": "tangent", "steer_weight": 0.68, "trending_field": "qec_hardware", "source": "ugrad-r0.html", "parent": "bloch-sphere" },
+    { "id": "scan-locate-bloch", "label": "scan locate Bloch+IC", "aliases": ["cortex scan", "quantum point from weights"], "relation": "fork", "steer_weight": 0.64, "trending_field": "qec_hardware", "source": "ugrad-r0.html", "parent": "bloch-sphere" },
+    { "id": "bloch-point-cloud", "label": "Bloch point cloud", "aliases": ["CAT MRI voxels", "body ecosystem blochAxis"], "relation": "fork", "steer_weight": 0.6, "trending_field": "qec_hardware", "source": "ugrad-r0.html", "parent": "bloch-sphere" },
+    { "id": "uvqbit-bloch-strip", "label": "uvqbit bloch strip", "aliases": ["per-qubit mini sphere", "bloch-row-main"], "relation": "platform", "steer_weight": 0.9, "trending_field": "qec_hardware", "source": "uvqbit.html", "parent": "bloch-sphere" },
+    { "id": "state-tomography", "label": "state tomography", "aliases": ["Rz tomography", "Rz(0) Rz(π/4) Rz(π/2)"], "relation": "refinement", "steer_weight": 0.91, "trending_field": "qec_hardware", "source": "uvqbit.html", "parent": "bloch-sphere" },
+    { "id": "q-sphere", "label": "Q-sphere", "aliases": ["Q-sphere v1", "statevector visualization"], "relation": "core", "steer_weight": 0.93, "trending_field": "qec_hardware", "source": "uvqbit.html", "parent": "bloch-sphere" },
+    { "id": "q-sphere-cross-qpu", "label": "Q-sphere Cross-QPU", "aliases": ["5-qubit entanglement pattern"], "relation": "fork", "steer_weight": 0.85, "trending_field": "quantum_internet", "source": "uvqbit.html", "parent": "q-sphere" },
+    { "id": "heavy-hex-topology", "label": "Heavy-Hex topology", "aliases": ["Eagle r3 bridge qubits", "ibm_pittsburgh"], "relation": "fork", "steer_weight": 0.92, "trending_field": "qec_hardware", "source": "uvqbit.html", "parent": "quantum-computing" },
+    { "id": "readout-fidelity", "label": "readout fidelity", "aliases": ["detector-delay", "magnetization graph"], "relation": "tangent", "steer_weight": 0.87, "trending_field": "qec_hardware", "source": "kbatch-main.js", "parent": "state-tomography" },
+    { "id": "light-cone-decoherence", "label": "light-cone decoherence", "aliases": ["interference band"], "relation": "tangent", "steer_weight": 0.84, "trending_field": "qec_hardware", "source": "kbatch-main.js", "parent": "decoherence" },
+    { "id": "hexcast-bloch-bridge", "label": "hexcast D-Wave Bloch bridge", "aliases": ["Source Target Detector", "injectFrame blochAngles"], "relation": "platform", "steer_weight": 0.8, "trending_field": "qec_hardware", "source": "hexcast-bloch-bridge.js", "parent": "bloch-sphere" },
+    { "id": "bloch-video-codec", "label": "bloch video codec", "aliases": ["mono stereo 360 lightfield"], "relation": "platform", "steer_weight": 0.65, "trending_field": "qec_hardware", "source": "hexcast.html", "parent": "hexcast-bloch-bridge" },
+    { "id": "codex-globe-bloch", "label": "codex · bloch · globe", "aliases": ["Quantum Geographic Codex", "scene-globe"], "relation": "platform", "steer_weight": 0.83, "trending_field": "quantum_internet", "source": "uvqbit.html", "parent": "bloch-sphere" },
+    { "id": "pauli-gates-bloch", "label": "Pauli X Y Z on Bloch", "aliases": ["Pauli-X NOT", "phase flip Z"], "relation": "core", "steer_weight": 0.94, "trending_field": "qec_hardware", "source": "uvqbit.html", "parent": "pauli-bloch" },
+    { "id": "dual-inverse-bloch", "label": "dual inverse Bloch", "aliases": ["antiparticle CPT", "antimatter marker"], "relation": "tangent", "steer_weight": 0.79, "trending_field": "quantum_internet", "source": "composerIBM/bloch-dual.js", "parent": "bloch-sphere" },
+    { "id": "openqasm-bloch-trajectory", "label": "OpenQASM Bloch trajectory", "relation": "platform", "steer_weight": 0.9, "trending_field": "qec_hardware", "source": "composerIBM", "parent": "bloch-sphere" }
+  ],
+  "extended_nodes": [
+    { "id": "pauli-bloch", "label": "Pauli Bloch", "aliases": ["Pauli vector", "⟨σ⟩"], "relation": "core", "steer_weight": 0.94, "trending_field": "qec_hardware", "parent": "bloch-sphere" },
+    { "id": "dressed-state", "label": "Dressed state", "relation": "tangent", "steer_weight": 0.82, "trending_field": "qec_hardware", "parent": "floquet-bloch" },
+    { "id": "geometric-phase", "label": "Geometric phase", "aliases": ["Berry phase"], "relation": "tangent", "steer_weight": 0.72, "trending_field": "qec_hardware", "parent": "bloch-sphere" },
+    { "id": "spin-echo", "label": "Spin echo", "relation": "tangent", "steer_weight": 0.68, "trending_field": "qec_hardware", "parent": "bloch-sphere" },
+    { "id": "decoherence", "label": "Decoherence", "relation": "tangent", "steer_weight": 0.88, "trending_field": "qec_hardware", "parent": "quantum-computing" },
+    { "id": "t1-t2", "label": "T1 T2", "aliases": ["relaxation", "dephasing"], "relation": "tangent", "steer_weight": 0.84, "trending_field": "qec_hardware", "parent": "quantum-computing" },
+    { "id": "zeeman", "label": "Zeeman effect", "relation": "tangent", "steer_weight": 0.7, "trending_field": "qec_hardware", "parent": "stark-effect" },
+    { "id": "surface-code", "label": "Surface code", "aliases": ["topological QEC"], "relation": "fork", "steer_weight": 0.93, "trending_field": "qec_hardware", "parent": "quantum-computing" },
+    { "id": "logical-qubit", "label": "Logical qubit", "aliases": ["fault-tolerant"], "relation": "fork", "steer_weight": 0.92, "trending_field": "qec_hardware", "parent": "surface-code" },
+    { "id": "bell-state", "label": "Bell state", "aliases": ["EPR pair"], "relation": "tangent", "steer_weight": 0.86, "trending_field": "quantum_internet", "parent": "bloch-sphere" },
+    { "id": "quantum-teleportation", "label": "Quantum teleportation", "relation": "fork", "steer_weight": 0.84, "trending_field": "quantum_internet", "parent": "bell-state" },
+    { "id": "entanglement", "label": "Entanglement", "relation": "core", "steer_weight": 0.9, "trending_field": "quantum_internet", "parent": "bloch-sphere" },
+    { "id": "qkd", "label": "Quantum Key Distribution", "aliases": ["QKD"], "relation": "fork", "steer_weight": 0.88, "trending_field": "quantum_internet", "parent": "quantum bloch" },
+    { "id": "entanglement-distribution", "label": "Entanglement distribution", "aliases": ["entanglement swapping"], "relation": "fork", "steer_weight": 0.87, "trending_field": "quantum_internet", "parent": "qkd" },
+    { "id": "shor-threat", "label": "Shor algorithm threat", "aliases": ["RSA break"], "relation": "fork", "steer_weight": 0.85, "trending_field": "pqc_qday", "parent": "quantum-computing" },
+    { "id": "q-day-prep", "label": "Q-Day preparation", "aliases": ["Y2Q", "quantum threat timeline"], "relation": "platform", "steer_weight": 0.9, "trending_field": "pqc_qday", "parent": "shor-threat" },
+    { "id": "lattice-pqc", "label": "Lattice PQC", "aliases": ["CRYSTALS-Kyber", "CRYSTALS-Dilithium", "NIST PQC"], "relation": "fork", "steer_weight": 0.92, "trending_field": "pqc_qday", "parent": "q-day-prep" },
+    { "id": "hndl", "label": "Harvest now decrypt later", "aliases": ["HNDL"], "relation": "tangent", "steer_weight": 0.78, "trending_field": "pqc_qday", "parent": "q-day-prep" },
+    { "id": "crypto-agility", "label": "Crypto agility", "relation": "tangent", "steer_weight": 0.75, "trending_field": "pqc_qday", "parent": "lattice-pqc" },
+    { "id": "dirac-bloch", "label": "Dirac notation on Bloch", "aliases": ["bra-ket", "|ψ⟩"], "relation": "core", "steer_weight": 0.89, "trending_field": "qec_hardware", "parent": "bloch-sphere" },
+    { "id": "superposition", "label": "Superposition", "relation": "core", "steer_weight": 0.88, "trending_field": "qec_hardware", "parent": "bloch-sphere" },
+    { "id": "hamiltonian-bloch", "label": "Hamiltonian geodesic on S²", "aliases": ["RK4 Bloch trajectory"], "relation": "tangent", "steer_weight": 0.83, "trending_field": "qec_hardware", "parent": "openqasm-bloch-trajectory" }
+  ],
+  "by_field": {
+    "qec_hardware": [
+      "ac-stark", "bloch-sphere", "floquet", "optical-pumping", "ultracold-molecules", "stark-shift", "stark-effect",
+      "bloch-oscillations", "rydberg", "floquet-bloch", "domain-wall", "quantum-dot", "quantum-computing",
+      "rydberg-atoms", "frequency-spectrum", "weights-to-bloch", "bloch-overhead-slice", "export-bloch-svg",
+      "bloch-animate", "scan-locate-bloch", "bloch-point-cloud", "uvqbit-bloch-strip", "state-tomography",
+      "q-sphere", "heavy-hex-topology", "readout-fidelity", "light-cone-decoherence", "hexcast-bloch-bridge",
+      "bloch-video-codec", "pauli-gates-bloch", "openqasm-bloch-trajectory", "pauli-bloch", "dressed-state",
+      "geometric-phase", "spin-echo", "decoherence", "t1-t2", "zeeman", "surface-code", "logical-qubit",
+      "dirac-bloch", "superposition", "hamiltonian-bloch"
+    ],
+    "pqc_qday": ["shor-threat", "q-day-prep", "lattice-pqc", "hndl", "crypto-agility"],
+    "quantum_internet": [
+      "bloch-state-channel", "q-sphere-cross-qpu", "codex-globe-bloch", "dual-inverse-bloch",
+      "bell-state", "quantum-teleportation", "entanglement", "qkd", "entanglement-distribution"
+    ]
+  },
+  "training_export": {
+    "canonical_index": "by_field",
+    "canonical_order": "trending_fields rank (qec_hardware → pqc_qday → quantum_internet), then each field's id array in list order",
+    "row_shape": "{ context, trending_field, field_index, suggestion, relation, weight, rank, source, id, aliases }",
+    "apis": [
+      "ConceptSteer.trainingRows('quantum bloch') — default mode by_field",
+      "ConceptSteer.trainingRows('quantum bloch', { mode: 'all_nodes' }) — audit flatten",
+      "ConceptSteer.validateByFieldIndex() — assert by_field ids resolve",
+      "ConceptSteer.byField('qec_hardware')",
+      "ConceptSteer.trendingFields()"
+    ],
+    "cli": "node scripts/export-concept-training.mjs && node scripts/export-concept-training.mjs --validate"
+  }
+}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bloch sphere — composerIBM</title>
+<link rel="stylesheet" href="styles/bloch-viewer.css?v=3">
+</head>
+<body>
+<div id="viewer-app">
+  <header id="viewer-hdr">
+    <a href="index.html" class="back">← Composer</a>
+    <span class="title">Bloch sphere</span>
+    <span class="hint">IBM Composer–style viewer</span>
+    <span class="spacer"></span>
+    <button type="button" id="btn-mode" title="Toggle single / dual">Dual</button>
+    <button type="button" id="btn-spin">Spin</button>
+    <button type="button" id="btn-sync">Sync QASM</button>
+    <button type="button" id="btn-lab-drawer" class="link-lab" aria-expanded="false">Full lab</button>
+  </header>
+
+  <main id="viewer-main">
+    <canvas id="cv-viewer"></canvas>
+    <aside id="lab-drawer" class="lab-drawer" hidden>
+      <div class="lab-drawer-hdr">
+        <span>Full lab</span>
+        <button type="button" id="btn-lab-close">Close</button>
+      </div>
+      <iframe id="lab-frame" title="Bloch full lab"></iframe>
+    </aside>
+  </main>
+
+  <footer id="viewer-footer">
+    <span id="viewer-stats">—</span>
+  </footer>
+</div>
+
+<script src="js/bloch-math.js"></script>
+<script src="js/bloch-dual.js"></script>
+<script src="js/bloch-trajectory.js"></script>
+<script src="js/bloch-render.js?v=4"></script>
+<script src="js/bloch-engine.js?v=2"></script>
+<script src="js/bloch-viewer.js?v=3"></script>
+</body>
+</html>

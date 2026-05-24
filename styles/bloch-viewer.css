@@ -1,0 +1,42 @@
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#ffffff;--panel:#ffffff;--menu:#ffffff;--border:#c8d4e3;--fg:#1f2937;--dim:#607087;--accent:#0969da;--yellow:#8a6d1f}
+html,body{height:100%;background:#ffffff;color:var(--fg);font:12px 'SF Mono',monospace;overflow:hidden}
+#viewer-app{display:grid;grid-template-rows:auto 1fr auto;height:100vh}
+#viewer-hdr{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--menu)}
+#viewer-hdr .title{color:var(--yellow);font-weight:600;font-size:13px}
+#viewer-hdr .hint{color:var(--dim);font-size:11px}
+#viewer-hdr .spacer{flex:1}
+#viewer-hdr button,#viewer-hdr .back,#viewer-hdr .link-lab{background:var(--panel);border:1px solid var(--border);color:var(--accent);font:inherit;padding:6px 12px;border-radius:4px;cursor:pointer;text-decoration:none;font-size:11px}
+#viewer-hdr button:hover,#viewer-hdr .back:hover{border-color:var(--accent)}
+#viewer-main{min-height:0;position:relative;display:grid;grid-template-columns:minmax(0,1fr);background:#ffffff}
+#viewer-main.drawer-open{grid-template-columns:minmax(0,1fr) minmax(320px,42vw)}
+#cv-viewer{width:100%;height:100%;display:block;background:#ffffff}
+.lab-drawer{
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  border-left:1px solid var(--border);
+  background:#ffffff;
+}
+.lab-drawer[hidden]{display:none}
+.lab-drawer-hdr{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border-bottom:1px solid var(--border);
+  background:#f8fbff;
+  color:var(--fg);
+}
+.lab-drawer-hdr span{font-weight:700;color:var(--yellow)}
+.lab-drawer-hdr button{margin-left:auto;background:#ffffff;border:1px solid var(--border);color:var(--accent);font:inherit;padding:4px 8px;border-radius:4px;cursor:pointer}
+#lab-frame{
+  flex:1 1 auto;
+  width:100%;
+  min-height:0;
+  border:0;
+  background:#ffffff;
+}
+#viewer-footer{padding:8px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--dim);background:var(--menu)}
+#viewer-stats{color:var(--fg)}

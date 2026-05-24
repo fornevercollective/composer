@@ -1,0 +1,4 @@
+# Optional — for real offline sim
+qiskit>=1.0
+qiskit-aer>=0.13
+numpy>=1.24

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>composerIBM — offline Quantum Composer</title>
+<link rel="stylesheet" href="styles/composer.css?v=38">
+<style>.g-line{display:block}.g-n{color:#5c6778}.g-s{color:#bc8cff}</style>
+</head>
+<body>
+<div id="app" class="show-editor show-circuit">
+  <header id="hdr">
+    <div class="hdr-brand">
+      <span class="title">composerIBM</span>
+      <span class="hdr-tagline">offline · preflight · QBT waveform</span>
+      <button type="button" id="btn-hdr-target-toggle" class="hdr-target-toggle" title="Collapse QPU controls" aria-expanded="true">QPU</button>
+      <label for="hdr-menu-open" class="hdr-menu-btn" aria-label="Open menu">Menu</label>
+    </div>
+    <input type="checkbox" id="hdr-menu-open" class="hdr-menu-open" aria-hidden="true" tabindex="-1">
+    <div class="hdr-target">
+      <div class="hdr-target-row">
+        <label class="backend-pick" for="backend" title="Preflight QPU target">
+          <span class="backend-pick-lbl">QPU</span>
+          <select id="backend" class="backend-select" size="1"></select>
+        </label>
+        <label class="backend-search" for="backend-filter" title="Search by name, qubits, region, chip, vendor, tech, timezone, or codex city">
+          <span class="backend-pick-lbl">Find</span>
+          <input id="backend-filter" list="backend-filter-options" type="search" placeholder="name · qbits · region">
+          <datalist id="backend-filter-options"></datalist>
+        </label>
+        <select id="backend-sort" class="backend-sort" title="Sort / group backend dropdown">
+          <option value="q-desc">qbits ↓</option>
+          <option value="timezone">timezone</option>
+          <option value="region">region</option>
+          <option value="name">name</option>
+          <option value="q-asc">qbits ↑</option>
+        </select>
+        <div class="hdr-viewers" role="toolbar" aria-label="Toggle main sections">
+          <button type="button" class="view-tab active" data-section="editor" aria-pressed="true">QASM</button>
+          <button type="button" class="view-tab active" data-section="circuit" aria-pressed="true">Circuit</button>
+          <button type="button" class="view-tab" data-section="bloch" aria-pressed="false">Bloch</button>
+          <button type="button" class="view-tab" data-section="wave" aria-pressed="false">Wave</button>
+          <button type="button" class="view-tab" data-section="stats" aria-pressed="false">Stats</button>
+          <button type="button" class="view-tab" data-section="lattice" aria-pressed="false" title="Coupling map / QPU lattice">Lattice</button>
+        </div>
+      </div>
+      <div class="backend-detail-row">
+        <span id="backend-detail" class="backend-detail" title="Codex slot · hub · TZ · coords"></span>
+        <button type="button" id="btn-section-prev" class="section-step" title="Previous section">‹</button>
+        <button type="button" id="btn-section-next" class="section-step" title="Next section">›</button>
+      </div>
+    </div>
+    <nav id="hdr-actions" class="hdr-actions" aria-label="Composer actions">
+      <button type="button" id="btn-codex-map" title="Quantum Geographic Codex (uvqbit)">Codex</button>
+      <button type="button" id="btn-fleet-list" title="Location totals (north→south)">Fleet</button>
+      <label class="hdr-shots">shots <input id="shots" type="number" value="1024" min="1" max="100000"></label>
+      <button type="button" id="btn-analyze">Analyze</button>
+      <button type="button" id="btn-ugrad">Import μgrad</button>
+      <button type="button" id="btn-qasm">.qasm</button>
+      <button type="button" id="btn-export">Pipeline</button>
+      <button type="button" id="btn-sim">Local sim</button>
+      <button type="button" id="btn-reset">Reset</button>
+      <button type="button" id="btn-gutter">Gutter</button>
+      <button type="button" id="btn-bloch" title="Toggle Bloch sphere panel">Bloch</button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <div id="editor-wrap">
+      <div id="editor-label">
+        <span>OpenQASM</span>
+        <span class="editor-label-hint">export / sim = code only</span>
+        <span id="qg-coverage" class="qg-coverage"></span>
+      </div>
+      <div id="editor-stack" class="editor-stack">
+        <div id="qg-gutter" class="qg-gutter" aria-hidden="true" title="Quantum gutter — navigation only"></div>
+        <textarea id="qasm" spellcheck="false" autocomplete="off" aria-label="OpenQASM source"></textarea>
+        <div id="qasm-cards" class="qasm-cards" aria-label="QASM prefix cards"></div>
+      </div>
+    </div>
+    <section id="bloch-section" class="bloch-section" aria-hidden="true">
+      <div class="bloch-section-hdr">
+        <span>Bloch sphere</span>
+        <span class="bloch-section-hint">trajectory from QASM · q[0]</span>
+        <span class="spacer"></span>
+        <span id="bloch-panel-stats"></span>
+        <button type="button" id="btn-bloch-popout" title="Open standalone viewer">Pop out</button>
+        <button type="button" id="btn-bloch-lab" title="Full dual lab">Lab</button>
+      </div>
+      <div class="bloch-section-body">
+        <canvas id="cv-bloch-panel" width="800" height="200"></canvas>
+        <div id="bloch-panel-drawer" class="bloch-panel-drawer" hidden></div>
+      </div>
+    </section>
+    <section id="lane-wrap"><div id="lane"></div></section>
+  </main>
+
+  <aside id="side">
+    <section id="stats-panel" class="side-panel">
+      <h2>Preflight &amp; stats</h2>
+      <div id="stats"></div>
+    </section>
+    <section id="lattice-panel" class="side-panel">
+      <h2>Coupling map · QPU lattice</h2>
+      <div id="qpu-lattice" class="qpu-lattice"></div>
+    </section>
+    <section id="gutter-panel" class="side-panel">
+      <h2>QASM gutter</h2>
+      <div id="gutter-summary" class="gutter-summary" aria-live="polite"></div>
+      <div id="gutter-log"></div>
+    </section>
+  </aside>
+
+  <aside id="wave">
+    <h2>Ballistic waveform (QBT preview)</h2>
+    <canvas id="wave-canvas" width="280" height="160"></canvas>
+    <div id="wave-controls">
+      <label>Mach <input id="mach" type="range" min="0.1" max="5" step="0.1" value="1"></label>
+      <label>alt <input id="alt" type="range" min="0" max="3" step="1" value="0"></label>
+      <span id="wave-metrics" style="color:#5c6778"></span>
+    </div>
+  </aside>
+
+  <footer id="log-bar"></footer>
+</div>
+
+<script src="js/qasm-gutter.js?v=7"></script>
+<script src="js/editor-gutter.js?v=4"></script>
+<script src="js/qpu-fleet.js?v=5"></script>
+<script src="js/qpu-calibrations.js?v=2"></script>
+<script src="js/qpu-lattice.js?v=6"></script>
+<script src="js/preflight-lite.js"></script>
+<script src="js/waveform-qbt.js"></script>
+<script src="js/bloch-math.js"></script>
+<script src="js/bloch-dual.js"></script>
+<script src="js/bloch-trajectory.js"></script>
+<script src="js/bloch-render.js?v=4"></script>
+<script src="js/bloch-engine.js?v=2"></script>
+<script src="js/bloch-panel.js?v=5"></script>
+<script src="js/circuit-composer.js?v=12"></script>
+<script src="js/concept-steer.js?v=3"></script>
+<script src="js/viewer-tabs.js?v=4"></script>
+<script src="js/bridge-ugrad.js?v=2"></script>
+<script src="js/composer-core.js?v=8"></script>
+</body>
+</html>
