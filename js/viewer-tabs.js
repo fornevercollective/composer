@@ -5,7 +5,7 @@
   'use strict';
 
   const STORAGE_KEY = 'composerIBM.sections';
-  const SECTIONS = ['editor', 'circuit', 'bloch', 'wave', 'stats', 'lattice'];
+  const SECTIONS = ['editor', 'circuit', 'bloch', 'wave', 'stats', 'lattice', 'charts'];
   const WIDE_DEFAULT_SECTIONS = ['editor', 'circuit', 'wave', 'stats'];
   const NARROW_DEFAULT_SECTIONS = ['editor', 'circuit'];
 

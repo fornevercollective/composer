@@ -214,6 +214,9 @@ async function refreshAll() {
   if (window.EditorGutter) window.EditorGutter.render(qasm);
   renderLane(qasm, analysis.preflight);
   refreshWaveform();
+  if (window.QuantumCharts && window.QuantumCharts.render) {
+    window.QuantumCharts.render($('charts-host'), analysis, null);
+  }
   if (window.ComposerBridge) window.ComposerBridge.publishState({ qasm, analysis });
   if (window.BlochPanel && window.BlochPanel.isOpen && window.BlochPanel.isOpen()) {
     window.BlochPanel.refresh();
@@ -307,6 +310,27 @@ window.ComposerCore = {
   log: logMsg,
   DEFAULT_QASM
 };
+
+function initThemeToggle() {
+  const btn = $('btn-theme-toggle');
+  if (!btn) return;
+  const root = document.documentElement;
+  const key = 'composerIBM.theme';
+  const saved = localStorage.getItem(key);
+  if (saved) root.setAttribute('data-theme', saved);
+  const apply = (t) => {
+    root.setAttribute('data-theme', t);
+    localStorage.setItem(key, t);
+    btn.textContent = t === 'dark' ? '☼' : '◐';
+  };
+  btn.addEventListener('click', () => {
+    const cur = root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    apply(cur === 'dark' ? 'light' : 'dark');
+  });
+  // initial icon
+  const initial = root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  btn.textContent = initial === 'dark' ? '☼' : '◐';
+}
 
 function initHeaderMenu() {
   const menuCb = $('hdr-menu-open');
@@ -470,6 +494,7 @@ function initFleetUi() {
 document.addEventListener('DOMContentLoaded', async () => {
   bindUi();
   initHeaderMenu();
+  initThemeToggle();
   initFleetUi();
   const saved = localStorage.getItem('composerIBM.lastQasm');
   $('qasm').value = saved || DEFAULT_QASM;

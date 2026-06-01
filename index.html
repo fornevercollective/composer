@@ -13,6 +13,7 @@
     <div class="hdr-brand">
       <span class="title">composerIBM</span>
       <span class="hdr-tagline">offline · preflight · QBT waveform</span>
+      <button type="button" id="btn-theme-toggle" class="hdr-target-toggle" title="Toggle light/dark (tokens)" aria-label="Toggle theme">◐</button>
       <button type="button" id="btn-hdr-target-toggle" class="hdr-target-toggle" title="Collapse QPU controls" aria-expanded="true">QPU</button>
       <label for="hdr-menu-open" class="hdr-menu-btn" aria-label="Open menu">Menu</label>
     </div>
@@ -99,6 +100,8 @@
     <section id="stats-panel" class="side-panel">
       <h2>Preflight &amp; stats</h2>
       <div id="stats"></div>
+      <!-- Charts host (Phase 1 — ECharts hybrid or fallback). Toggled via ViewerTabs 'charts' or always visible under stats for now -->
+      <div id="charts-host" style="margin-top:4px;border-top:1px solid var(--canvas-border);padding-top:4px;"></div>
     </section>
     <section id="lattice-panel" class="side-panel">
       <h2>Coupling map · QPU lattice</h2>
@@ -142,5 +145,8 @@
 <script src="js/viewer-tabs.js?v=4"></script>
 <script src="js/bridge-ugrad.js?v=2"></script>
 <script src="js/composer-core.js?v=8"></script>
+<!-- Optional ECharts (Phase 1 charting) — CDN for speed + examples; drop echarts.min.js next to wasm/ for airgap -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script> -->
+<script src="js/charts-echarts.js?v=1"></script>
 </body>
 </html>
