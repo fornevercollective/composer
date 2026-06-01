@@ -53,12 +53,9 @@
   </nav>
 
   <!-- Main Workspace: Flexible, modern container for the active surface -->
-  <main class="workspace">
-
-  <!-- Clean workspace with dedicated surface containers -->
   <div class="workspace">
     
-    <!-- Editor Surface -->
+    <!-- Editor Surface (loads first) -->
     <div id="surface-editor" class="surface active">
       <div id="editor-wrap">
         <div id="editor-label">
@@ -75,9 +72,9 @@
       <div id="lane-wrap"><div id="lane"></div></div>
     </div>
 
-    <!-- Other surfaces (JS will show/hide based on .surface-switcher) -->
+    <!-- Other surfaces -->
     <div id="surface-circuit" class="surface">
-      <div id="lane"></div> <!-- re-used for circuit -->
+      <div id="lane"></div>
     </div>
 
     <div id="surface-charts" class="surface">
@@ -88,20 +85,15 @@
       <div id="world-host"></div>
     </div>
 
-    <div id="surface-bloch" class="surface">
-      <!-- Bloch content will be managed by existing bloch JS or moved -->
-    </div>
-
-    <div id="surface-batch" class="surface">
-      <div id="batch-host"></div>
-    </div>
+    <div id="surface-bloch" class="surface"></div>
+    <div id="surface-batch" class="surface"></div>
 
   </div>
 
-  <!-- Right context sidebar (collapsible) -->
+  <!-- Context Sidebar -->
   <aside id="context-sidebar">
     <div id="stats-panel">
-      <h3>Preflight</h3>
+      <h3>Preflight & Stats</h3>
       <div id="stats"></div>
     </div>
     <div id="lattice-panel">
@@ -140,5 +132,124 @@
 <script src="js/charts-echarts.js?v=1"></script>
 <script src="js/precision-cursor.js?v=1"></script>
 <script src="js/global-lattice.js?v=1"></script>
+
+<!-- Minimal bootstrap to make the new structure actually load content -->
+<script>
+(function() {
+  'use strict';
+
+  const DEFAULT_QASM = `OPENQASM 3.0;
+include "stdgates.inc";
+qubit[2] q;
+bit[2] c;
+
+// composer — remade structure
+h q[0];
+cx q[0], q[1];
+c[0] = measure q[0];
+c[1] = measure q[1];
+`;
+
+  function $(id) { return document.getElementById(id); }
+
+  function setActiveSurface(name) {
+    document.querySelectorAll('.surface').forEach(s => s.classList.remove('active'));
+    const target = $('surface-' + name);
+    if (target) target.classList.add('active');
+
+    document.querySelectorAll('.surface-switcher .surface').forEach(b => {
+      b.classList.toggle('active', b.dataset.surface === name);
+    });
+  }
+
+  function initSurfaces() {
+    // Wire surface buttons
+    document.querySelectorAll('.surface-switcher .surface').forEach(btn => {
+      btn.addEventListener('click', () => setActiveSurface(btn.dataset.surface));
+    });
+
+    // Default to editor
+    setActiveSurface('editor');
+  }
+
+  function initEditor() {
+    const ta = $('qasm');
+    if (!ta) return;
+
+    ta.value = DEFAULT_QASM;
+
+    // Basic live refresh
+    let timer;
+    ta.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (window.ComposerCore && window.ComposerCore.refreshAll) {
+          window.ComposerCore.refreshAll();
+        }
+      }, 300);
+    });
+
+    // Initial render attempts (will work if core loads)
+    setTimeout(() => {
+      if (window.ComposerCore && window.ComposerCore.refreshAll) {
+        window.ComposerCore.refreshAll();
+      } else {
+        // Fallback: at least show something in lane if possible
+        const lane = $('lane');
+        if (lane) lane.textContent = 'Editor loaded — full features initializing...';
+      }
+    }, 200);
+  }
+
+  function initCommandBar() {
+    const input = $('command-input');
+    if (!input) return;
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const val = input.value.trim().toLowerCase();
+        if (val.includes('sweep') || val.includes('batch')) {
+          const host = $('surface-batch');
+          if (host) {
+            setActiveSurface('batch');
+            host.innerHTML = '<div style="padding:20px">Batch surface ready. Run a sweep from the command or button.</div>';
+          }
+        } else if (val.includes('world') || val.includes('lattice')) {
+          setActiveSurface('world');
+          if (window.GlobalLattice) {
+            const h = $('world-host');
+            if (h) window.GlobalLattice.init('world-host');
+          }
+        } else if (val.includes('charts')) {
+          setActiveSurface('charts');
+        } else if (val.includes('analyze')) {
+          if (window.ComposerCore && window.ComposerCore.refreshAll) window.ComposerCore.refreshAll();
+        } else {
+          console.log('Command:', val);
+        }
+        input.value = '';
+      }
+    });
+  }
+
+  function bootstrap() {
+    initSurfaces();
+    initEditor();
+    initCommandBar();
+
+    // Make sure editor is visible
+    setTimeout(() => setActiveSurface('editor'), 50);
+
+    console.log('%c[composer] New structure bootstrapped. Editor should be loading.', 'color:#3fb950');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootstrap);
+  } else {
+    bootstrap();
+  }
+})();
+</script>
+
 </body>
 </html>
