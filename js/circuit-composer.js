@@ -104,6 +104,29 @@
     const n = qubitCount(qasm, 2);
     if (action.type === 'add-qubit') return setRegisterSize(qasm, n + 1);
     if (action.type === 'insert') return insertBeforeMeasures(qasm, statementFor(action.gate, action.q, n));
+    if (action.type === 'delete') {
+      const lines = qasm.split('\n');
+      const idx = lines.findIndex((l, i) => i === action.lineIndex);
+      if (idx >= 0) lines.splice(idx, 1);
+      return lines.join('\n');
+    }
+    if (action.type === 'update-param' && action.lineIndex != null) {
+      const lines = qasm.split('\n');
+      let line = lines[action.lineIndex] || '';
+      line = line.replace(/(\w+)\s*\([^)]*\)/, `$1(${action.param})`);
+      lines[action.lineIndex] = line;
+      return lines.join('\n');
+    }
+    if (action.type === 'reorder' && Array.isArray(action.newOps)) {
+      // Rebuild QASM from new ordered ops (keeps comments and non-op lines where possible)
+      const lines = qasm.split('\n');
+      const nonOpLines = lines.filter(l => !/^\s*(h|x|y|z|rx|ry|rz|p|sx|cx|rxx|rzz|barrier|reset|measure)/i.test(l.replace(/\/\/.*$/,'').trim()));
+      const newQasmLines = [...nonOpLines];
+      action.newOps.forEach(op => {
+        newQasmLines.push(statementFor(op.gate, op.q[0], n)); // simplified
+      });
+      return newQasmLines.join('\n');
+    }
     return qasm;
   }
 
@@ -232,8 +255,62 @@
         cell.className = cellClass(op, qi);
         cell.textContent = cellText(op, qi);
         cell.title = op ? `${op.gate} q[${op.q.join('], q[')}]` : `add ${activeGate.toUpperCase()} on q[${qi}]`;
+
         if (!op) {
           cell.addEventListener('click', () => onChange(editQasm(qasm, { type: 'insert', gate: activeGate, q: qi })));
+        } else {
+          // Delete with Shift+click
+          cell.addEventListener('click', (e) => {
+            if (e.shiftKey && op.lineIndex != null) {
+              onChange(editQasm(qasm, { type: 'delete', lineIndex: op.lineIndex }));
+            } else if (op.param && op.lineIndex != null) {
+              const current = (op.param || '').replace(/[()]/g, '');
+              const newVal = prompt(`Edit ${op.gate} param (radians)`, current);
+              if (newVal !== null) {
+                onChange(editQasm(qasm, { type: 'update-param', lineIndex: op.lineIndex, param: newVal }));
+              }
+            }
+          });
+          cell.addEventListener('dblclick', () => {
+            if (op.param && op.lineIndex != null) {
+              const current = (op.param || '').replace(/[()]/g, '');
+              const newVal = prompt(`Edit ${op.gate} param`, current);
+              if (newVal !== null) {
+                onChange(editQasm(qasm, { type: 'update-param', lineIndex: op.lineIndex, param: newVal }));
+              }
+            }
+          });
+
+          // Drag to reorder (Phase 3 design surface)
+          cell.draggable = true;
+          cell.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', JSON.stringify({ lineIndex: op.lineIndex, gate: op.gate, q: op.q }));
+            cell.style.opacity = '0.5';
+          });
+          cell.addEventListener('dragend', () => { cell.style.opacity = '1'; });
+          cell.addEventListener('dragover', (e) => { e.preventDefault(); cell.style.background = 'rgba(9,105,218,0.15)'; });
+          cell.addEventListener('dragleave', () => { cell.style.background = ''; });
+          cell.addEventListener('drop', (e) => {
+            e.preventDefault();
+            cell.style.background = '';
+            try {
+              const from = JSON.parse(e.dataTransfer.getData('text/plain'));
+              const to = { lineIndex: op.lineIndex, gate: op.gate, q: op.q };
+              if (from.lineIndex === to.lineIndex) return;
+
+              // Simple reorder in parsed ops
+              const currentOps = parseOps(qasm);
+              const fromIdx = currentOps.findIndex(o => o.lineIndex === from.lineIndex);
+              const toIdx = currentOps.findIndex(o => o.lineIndex === to.lineIndex);
+              if (fromIdx < 0 || toIdx < 0) return;
+
+              const moved = currentOps.splice(fromIdx, 1)[0];
+              currentOps.splice(toIdx, 0, moved);
+
+              // Rebuild a simplified QASM with new order (keeps structure)
+              onChange(editQasm(qasm, { type: 'reorder', newOps: currentOps }));
+            } catch (_) {}
+          });
         }
         grid.appendChild(cell);
       }

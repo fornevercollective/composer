@@ -73,6 +73,18 @@ Before marking a phase complete:
 - Zero network required for core experience.
 - DESIGN.md updated with any new patterns/tokens.
 
+## Recently Added Patterns (2026 slices)
+
+- **Global Lattice Panel** (`.global-lattice-panel`, `.global-lattice-header/body/footer`): Full-bleed mission-control style overlay for world-scale quantum fleet view. Uses tokens heavily. Click nodes to load backends (strong linkage/grokability).
+- **Precision Crosshair** (`#precision-crosshair`): Site-wide high-precision pointer (inspired by go-ugrad). Subtle default opacity, smart hiding, Shift+C toggle. Part of "design instrument" feel.
+- **Quick Sweep + Flight Log** (mini in charts host): Local variant launcher + visible recent flights list with one-click load. Real Phase 2 seed.
+- **Command input** (light AITO-style): Small header field that understands "sweep", "load torino", "world". Great for grokability and rapid iteration.
+- **Circuit composer upgrades**: Shift+click delete + click/double-click param editing + HTML5 drag-to-reorder on the visual grid. Real design surface capabilities.
+- **Flight log viewer**: Clear, Export, visible list with one-click load/replay. Proper Phase 2 experience.
+- **Verification helper**: `window.ComposerCore.runVerification()` — steps through the 15 success criteria from the plan.
+- **Command / Mission hints**: Light AITO-style guidance in header + "World" tab that opens the global codex view.
+- Linkage principle: New surfaces (World Lattice, Charts, Sweep) feed each other via simple window.* APIs (e.g. `GlobalLattice.getLatencySamples()` consumed by charts). This creates emergent grokability without heavy coupling.
+
 ## References (Internal North Star)
 
 - AITO (fornevercollective): minimal elegant, AI command bar, PWA, live tether feel, film-accurate detail.

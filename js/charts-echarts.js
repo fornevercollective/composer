@@ -96,11 +96,107 @@
   function render(container, analysis, calibration) {
     if (!container) return;
     destroyAll();
-    // Attach two quick high-value charts (expand in later passes)
+
+    // 1. Preflight metrics bar
     renderPreflightBar(container, analysis);
+
+    // 2. Fidelity gauge
     renderFidelityGauge(container, analysis);
-    // Future: error heatmap (calibration), Bloch trajectory line (bloch-trajectory data), etc.
-    // Example hook for more: if (hasECharts()) { ... add from ECharts gallery (heatmap, line, radar) }
+
+    // 3. Latency distribution (from Global Lattice when available)
+    if (root.GlobalLattice && root.GlobalLattice.getLatencySamples) {
+      const samples = root.GlobalLattice.getLatencySamples(10) || [];
+      if (samples.length > 3) {
+        const el = ensureHost('q-chart-latency', container);
+        if (hasECharts()) {
+          const ch = echartsLib.init(el, null, { renderer: 'canvas' });
+          ch.setOption({
+            backgroundColor: 'transparent',
+            title: { text: 'Global Latency (ms)', left: 4, top: 2, textStyle: { fontSize: 10, color: '#607087' } },
+            grid: { left: 28, right: 8, top: 22, bottom: 18 },
+            xAxis: { type: 'category', data: samples.map((_, i) => i), show: false },
+            yAxis: { type: 'value', axisLabel: { fontSize: 9 } },
+            series: [{ type: 'bar', data: samples, itemStyle: { color: '#56d4dd' } }]
+          });
+          charts.latency = ch;
+        } else {
+          el.innerHTML = `<div style="font-size:9px;padding:4px;color:#607087;">Latency samples: ${samples.join(', ')} ms (fallback)</div>`;
+        }
+      }
+    }
+
+    // 4. QPU Error Histogram (from current backend calibration)
+    if (root.QPUCalibrations && analysis && analysis.preflight) {
+      const backend = analysis.preflight.backend;
+      const snap = root.QPUCalibrations.get(backend);
+      if (snap && snap.qubits && snap.qubits.length > 3) {
+        const errs = snap.qubits.map(q => q.err_1q || 0).slice(0, 12);
+        const el = ensureHost('q-chart-error-hist', container);
+        if (hasECharts()) {
+          const ch = echartsLib.init(el, null, { renderer: 'canvas' });
+          ch.setOption({
+            backgroundColor: 'transparent',
+            title: { text: `1Q Errors — ${backend}`, left: 4, top: 2, textStyle: { fontSize: 10, color: '#607087' } },
+            grid: { left: 28, right: 8, top: 22, bottom: 18 },
+            xAxis: { type: 'category', data: errs.map((_, i) => i), axisLabel: { fontSize: 8 } },
+            yAxis: { type: 'value', axisLabel: { fontSize: 9 } },
+            series: [{ type: 'bar', data: errs, itemStyle: { color: '#f85149' } }]
+          });
+          charts.errorHist = ch;
+        } else {
+          el.innerHTML = `<div style="font-size:9px;padding:4px;color:#607087;">1Q err samples for ${backend} (fallback)</div>`;
+        }
+      }
+    }
+
+    // 5. Simple Bloch-style Trajectory Tension (mocked from current depth if no real path)
+    if (analysis && analysis.preflight) {
+      const depth = analysis.preflight.circuitDepth || 5;
+      const tension = Array.from({ length: Math.min(depth, 12) }, (_, i) => 0.2 + Math.sin(i / 2) * 0.15 + (i / depth) * 0.3);
+      const el = ensureHost('q-chart-trajectory', container);
+      if (hasECharts()) {
+        const ch = echartsLib.init(el, null, { renderer: 'canvas' });
+        ch.setOption({
+          backgroundColor: 'transparent',
+          title: { text: 'Trajectory Tension (sim)', left: 4, top: 2, textStyle: { fontSize: 10, color: '#607087' } },
+          grid: { left: 28, right: 8, top: 22, bottom: 18 },
+          xAxis: { type: 'category', data: tension.map((_, i) => i) },
+          yAxis: { type: 'value', min: 0, max: 1, axisLabel: { fontSize: 9 } },
+          series: [{ type: 'line', data: tension, smooth: true, itemStyle: { color: '#bc8cff' } }]
+        });
+        charts.trajectory = ch;
+      } else {
+        el.innerHTML = `<div style="font-size:9px;padding:4px;color:#607087;">Trajectory sim (fallback)</div>`;
+      }
+    }
+
+    // Gallery launcher buttons for grokability (core ECharts request)
+    addGalleryLaunchers(container);
+  }
+
+  function addGalleryLaunchers(container) {
+    if (!container) return;
+    const launcher = document.createElement('div');
+    launcher.style.cssText = 'margin-top:6px; font-size:9px; display:flex; gap:6px; flex-wrap:wrap;';
+    launcher.innerHTML = `
+      <span style="color:#607087;">More from ECharts gallery:</span>
+      <button class="q-gallery-btn" data-type="bar">Bar</button>
+      <button class="q-gallery-btn" data-type="line">Line</button>
+      <button class="q-gallery-btn" data-type="heatmap">Heatmap</button>
+      <button class="q-gallery-btn" data-type="radar">Radar</button>
+    `;
+    launcher.querySelectorAll('.q-gallery-btn').forEach(btn => {
+      btn.style.cssText = 'padding:1px 6px; font-size:9px; border:1px solid var(--canvas-border); background:var(--canvas2); border-radius:3px; cursor:pointer;';
+      btn.addEventListener('click', () => {
+        const type = btn.dataset.type;
+        const url = `https://echarts.apache.org/examples/en/index.html#chart-type-${type}`;
+        window.open(url, '_blank');
+        if (root.ComposerCore && root.ComposerCore.log) {
+          root.ComposerCore.log(`<span class="info">Opened ECharts ${type} gallery</span>`);
+        }
+      });
+    });
+    container.appendChild(launcher);
   }
 
   function init() {

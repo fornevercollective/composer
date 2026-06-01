@@ -12,7 +12,7 @@
   <header id="hdr">
     <div class="hdr-brand">
       <span class="title">composerIBM</span>
-      <span class="hdr-tagline">offline · preflight · QBT waveform</span>
+      <span class="hdr-tagline">offline · preflight · trajectory-scale · Shift+C crosshair</span>
       <button type="button" id="btn-theme-toggle" class="hdr-target-toggle" title="Toggle light/dark (tokens)" aria-label="Toggle theme">◐</button>
       <button type="button" id="btn-hdr-target-toggle" class="hdr-target-toggle" title="Collapse QPU controls" aria-expanded="true">QPU</button>
       <label for="hdr-menu-open" class="hdr-menu-btn" aria-label="Open menu">Menu</label>
@@ -43,7 +43,13 @@
           <button type="button" class="view-tab" data-section="wave" aria-pressed="false">Wave</button>
           <button type="button" class="view-tab" data-section="stats" aria-pressed="false">Stats</button>
           <button type="button" class="view-tab" data-section="lattice" aria-pressed="false" title="Coupling map / QPU lattice">Lattice</button>
+          <button type="button" class="view-tab" data-section="charts" aria-pressed="false">Charts</button>
+          <button type="button" class="view-tab" data-section="world" aria-pressed="false" title="Global Quantum Lattice">World</button>
         </div>
+        <div style="font-size:9px; color:#607087; margin-left:8px; white-space:nowrap; display:flex; align-items:center; gap:4px;">
+        <span>Cmd:</span>
+        <input id="cmd-hint" placeholder="sweep shots / load torino / world" style="width:140px; font-size:9px; padding:1px 4px; border:1px solid var(--canvas-border); background:var(--canvas2);">
+      </div>
       </div>
       <div class="backend-detail-row">
         <span id="backend-detail" class="backend-detail" title="Codex slot · hub · TZ · coords"></span>

@@ -1134,3 +1134,70 @@ html,body{height:100%;background:var(--canvas);color:var(--canvas-fg);font:12px/
 #app.show-stats:not(.show-editor):not(.show-circuit):not(.show-bloch):not(.show-wave) #side{
   display:flex;
 }
+
+/* === Phase 0+1+ slices polish: Global Lattice + Precision Cursor + Design Feel === */
+.global-lattice-panel {
+  position: fixed;
+  inset: 32px 16px 48px;
+  z-index: 1200;
+  background: var(--canvas2);
+  border: 1px solid var(--canvas-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-size: var(--type-sm);
+}
+
+.global-lattice-header {
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--canvas-border);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--bg3);
+  font-size: var(--type-sm);
+  color: var(--canvas-fg);
+}
+
+.global-lattice-header strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.global-lattice-body {
+  flex: 1;
+  padding: var(--space-3);
+  background: var(--canvas);
+  overflow: hidden;
+}
+
+.global-lattice-footer {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--type-xs);
+  color: var(--canvas-dim);
+  border-top: 1px solid var(--canvas-border);
+  background: var(--bg3);
+}
+
+#precision-crosshair {
+  opacity: 0.55;
+  transition: opacity var(--motion-fast) var(--motion-ease);
+}
+
+#precision-crosshair:hover {
+  opacity: 0.75;
+}
+
+/* Better discoverability for new features */
+.hdr-tagline::after {
+  content: " · Shift+C crosshair · World Lattice";
+  opacity: 0.6;
+  font-size: 9px;
+}
+
+#cmd-hint {
+  font-family: inherit;
+  border-radius: var(--radius-sm);
+}

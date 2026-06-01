@@ -176,6 +176,25 @@
     canvas.addEventListener('mousemove', onMove);
     canvas.addEventListener('mouseleave', () => { hovered = null; draw(); });
 
+    // Click a node → load that backend into the main composer (great grokability + integration)
+    canvas.addEventListener('click', () => {
+      if (hovered && hovered.name && root.ComposerCore && root.ComposerCore.setBackend) {
+        root.ComposerCore.setBackend(hovered.name);
+        // Close the panel after selection for nice flow
+        const p = root.document.getElementById('global-lattice-panel');
+        if (p) p.remove();
+      } else if (hovered && hovered.name && root.$) {
+        // Fallback: set the backend select directly
+        const sel = root.document.getElementById('backend');
+        if (sel) {
+          sel.value = hovered.name;
+          sel.dispatchEvent(new Event('change', { bubbles: true }));
+          const p = root.document.getElementById('global-lattice-panel');
+          if (p) p.remove();
+        }
+      }
+    });
+
     // Initial draw
     draw();
 
@@ -188,5 +207,17 @@
     return { draw, refresh: () => draw() };
   }
 
-  root.GlobalLattice = { init, draw };
+  // Expose simple data for charts linkage (latency distribution)
+  function getLatencySamples(n = 12) {
+    if (!fleet || fleet.length < 3) return [];
+    const samples = [];
+    const ref = fleet.find(f => f.name && f.name.includes('torino')) || fleet[0];
+    for (let i = 0; i < Math.min(n, fleet.length); i++) {
+      const q = fleet[i];
+      if (q.lat != null) samples.push(estimatedLatency(q, ref));
+    }
+    return samples;
+  }
+
+  root.GlobalLattice = { init, draw, getLatencySamples };
 })(typeof window !== 'undefined' ? window : globalThis);
