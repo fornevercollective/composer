@@ -199,11 +199,16 @@ html,body{height:100%;background:var(--canvas);color:var(--canvas-fg);font:12px/
 #app:not(.show-stats) #stats-panel{display:none}
 #app:not(.show-lattice) #lattice-panel{display:none}
 #app:not(.show-stats):not(.show-gutter) #gutter-panel{display:none}
+#app:not(.show-charts) #charts-host{display:none}
+#app:not(.show-charts) #charts-section{display:none}
+#app.show-charts #charts-section{display:block}
+#app:not(.show-world) #global-lattice-host-in-main{display:none} /* placeholder for future world surface */
 #app:not(.show-editor).show-circuit #main{grid-template-rows:1fr}
 #app:not(.show-editor).show-circuit #lane-wrap{grid-row:1;max-height:none}
 #app:not(.show-editor).show-bloch #main.bloch-on{grid-template-rows:1fr minmax(72px,auto)}
 #app:not(.show-editor):not(.show-circuit).show-bloch #main.bloch-on{grid-template-rows:1fr}
 #app:not(.show-editor):not(.show-circuit).show-bloch #bloch-section{grid-row:1}
+#app.show-charts #charts-section{display:block}
 .hdr-actions{
   display:none;
   width:100%;
@@ -212,7 +217,12 @@ html,body{height:100%;background:var(--canvas);color:var(--canvas-fg);font:12px/
   min-width:0;
   padding-top:4px;
   border-top:1px solid var(--canvas-border);
-  background:#ffffff;
+  background:var(--canvas2);
+}
+.hdr-actions label {
+  grid-column: span 1;
+  font-size: 9px;
+  align-items: center;
 }
 #hdr-menu-open:checked~.hdr-actions{display:grid}
 #hdr:has(#hdr-menu-open:checked) .hdr-menu-btn{color:#0969da;border-color:#0969da;background:#eaf3ff}
@@ -1190,11 +1200,185 @@ html,body{height:100%;background:var(--canvas);color:var(--canvas-fg);font:12px/
   opacity: 0.75;
 }
 
-/* Better discoverability for new features */
-.hdr-tagline::after {
-  content: " · Shift+C crosshair · World Lattice";
-  opacity: 0.6;
+/* =========================================================
+   NEW EVOLVED STRUCTURE (2026 remade for AI-ready feel)
+   Clean, command-first, surface-oriented layout
+   ========================================================= */
+
+/* New Premium Header */
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: var(--canvas);
+  border-bottom: 1px solid var(--canvas-border);
+  flex-shrink: 0;
+}
+
+.brand .title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #8a6d1f;
+}
+
+.brand .subtitle {
+  font-size: 10px;
+  color: var(--canvas-dim);
+  margin-left: 8px;
+}
+
+.command-bar {
+  flex: 1 1 auto;
+  max-width: 520px;
+  display: flex;
+  align-items: center;
+  background: var(--canvas2);
+  border: 1px solid var(--canvas-border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  gap: 8px;
+}
+
+.command-bar .cmd-icon {
+  color: var(--color-primary);
+  font-size: 14px;
+}
+
+#command-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--canvas-fg);
+  font: inherit;
+  font-size: 12px;
+  outline: none;
+}
+
+.cmd-examples {
+  display: flex;
+  gap: 4px;
+}
+
+.example {
   font-size: 9px;
+  padding: 1px 5px;
+  background: var(--bg3);
+  border-radius: 3px;
+  color: var(--canvas-dim);
+  cursor: pointer;
+}
+
+.example:hover {
+  color: var(--color-primary);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn {
+  background: var(--canvas2);
+  border: 1px solid var(--canvas-border);
+  color: var(--canvas-fg);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.btn.icon {
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+/* Surface Switcher */
+.surface-switcher {
+  display: flex;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--canvas-border);
+  flex-shrink: 0;
+}
+
+.surface-switcher .surface {
+  padding: 4px 12px;
+  font-size: 11px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--canvas-dim);
+  cursor: pointer;
+}
+
+.surface-switcher .surface.active {
+  background: var(--canvas2);
+  color: var(--canvas-fg);
+  border-color: var(--canvas-border);
+}
+
+/* Workspace */
+.workspace {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+.surface {
+  display: none;
+  flex: 1;
+  overflow: auto;
+  padding: 12px;
+}
+
+.surface.active {
+  display: block;
+}
+
+/* Context Sidebar */
+#context-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--canvas-border);
+  background: var(--canvas);
+  overflow: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar-section h3 {
+  font-size: 10px;
+  color: var(--canvas-dim);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Keep old important containers working inside new surfaces */
+#editor-wrap, #lane-wrap, #charts-host, #bloch-section {
+  height: 100%;
+}
+
+/* Legacy support - hide old complex grid rules for the new structure */
+#app .hdr-brand,
+#app .hdr-target,
+#app .hdr-actions,
+#app #main,
+#app #side,
+#app #wave {
+  /* These are being phased out in the new structure */
 }
 
 #cmd-hint {

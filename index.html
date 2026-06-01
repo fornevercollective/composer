@@ -8,126 +8,109 @@
 <style>.g-line{display:block}.g-n{color:#5c6778}.g-s{color:#bc8cff}</style>
 </head>
 <body>
-<div id="app" class="show-editor show-circuit">
-  <header id="hdr">
-    <div class="hdr-brand">
-      <span class="title">composerIBM</span>
-      <span class="hdr-tagline">offline · preflight · trajectory-scale · Shift+C crosshair</span>
-      <button type="button" id="btn-theme-toggle" class="hdr-target-toggle" title="Toggle light/dark (tokens)" aria-label="Toggle theme">◐</button>
-      <button type="button" id="btn-hdr-target-toggle" class="hdr-target-toggle" title="Collapse QPU controls" aria-expanded="true">QPU</button>
-      <label for="hdr-menu-open" class="hdr-menu-btn" aria-label="Open menu">Menu</label>
+<!-- Completely remade structure: Clean, command-first, surface-oriented, AI-ready design surface -->
+<div id="app" data-active-surface="editor">
+
+  <!-- Premium Header with central Command Bar (AITO / high-end tool feel) -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="title">composer</span>
+      <span class="tag">trajectory • design • batch</span>
     </div>
-    <input type="checkbox" id="hdr-menu-open" class="hdr-menu-open" aria-hidden="true" tabindex="-1">
-    <div class="hdr-target">
-      <div class="hdr-target-row">
-        <label class="backend-pick" for="backend" title="Preflight QPU target">
-          <span class="backend-pick-lbl">QPU</span>
-          <select id="backend" class="backend-select" size="1"></select>
-        </label>
-        <label class="backend-search" for="backend-filter" title="Search by name, qubits, region, chip, vendor, tech, timezone, or codex city">
-          <span class="backend-pick-lbl">Find</span>
-          <input id="backend-filter" list="backend-filter-options" type="search" placeholder="name · qbits · region">
-          <datalist id="backend-filter-options"></datalist>
-        </label>
-        <select id="backend-sort" class="backend-sort" title="Sort / group backend dropdown">
-          <option value="q-desc">qbits ↓</option>
-          <option value="timezone">timezone</option>
-          <option value="region">region</option>
-          <option value="name">name</option>
-          <option value="q-asc">qbits ↑</option>
-        </select>
-        <div class="hdr-viewers" role="toolbar" aria-label="Toggle main sections">
-          <button type="button" class="view-tab active" data-section="editor" aria-pressed="true">QASM</button>
-          <button type="button" class="view-tab active" data-section="circuit" aria-pressed="true">Circuit</button>
-          <button type="button" class="view-tab" data-section="bloch" aria-pressed="false">Bloch</button>
-          <button type="button" class="view-tab" data-section="wave" aria-pressed="false">Wave</button>
-          <button type="button" class="view-tab" data-section="stats" aria-pressed="false">Stats</button>
-          <button type="button" class="view-tab" data-section="lattice" aria-pressed="false" title="Coupling map / QPU lattice">Lattice</button>
-          <button type="button" class="view-tab" data-section="charts" aria-pressed="false">Charts</button>
-          <button type="button" class="view-tab" data-section="world" aria-pressed="false" title="Global Quantum Lattice">World</button>
-        </div>
-        <div style="font-size:9px; color:#607087; margin-left:8px; white-space:nowrap; display:flex; align-items:center; gap:4px;">
-        <span>Cmd:</span>
-        <input id="cmd-hint" placeholder="sweep shots / load torino / world" style="width:140px; font-size:9px; padding:1px 4px; border:1px solid var(--canvas-border); background:var(--canvas2);">
-      </div>
-      </div>
-      <div class="backend-detail-row">
-        <span id="backend-detail" class="backend-detail" title="Codex slot · hub · TZ · coords"></span>
-        <button type="button" id="btn-section-prev" class="section-step" title="Previous section">‹</button>
-        <button type="button" id="btn-section-next" class="section-step" title="Next section">›</button>
+
+    <!-- The heart of grokability: Powerful, always-visible command bar -->
+    <div class="command-bar">
+      <span class="cmd-prefix">⌘</span>
+      <input id="command-input" 
+             type="text" 
+             placeholder="Type a command... (sweep, world, analyze, load torino, help)" 
+             autocomplete="off"
+             spellcheck="false">
+      <div class="cmd-examples">
+        <span class="example" data-cmd="sweep shots">sweep</span>
+        <span class="example" data-cmd="open world">world</span>
       </div>
     </div>
-    <nav id="hdr-actions" class="hdr-actions" aria-label="Composer actions">
-      <button type="button" id="btn-codex-map" title="Quantum Geographic Codex (uvqbit)">Codex</button>
-      <button type="button" id="btn-world-lattice" title="Global Quantum Lattice — all systems, hops & estimated latency">World Lattice</button>
-      <button type="button" id="btn-fleet-list" title="Location totals (north→south)">Fleet</button>
-      <label class="hdr-shots">shots <input id="shots" type="number" value="1024" min="1" max="100000"></label>
-      <button type="button" id="btn-analyze">Analyze</button>
-      <button type="button" id="btn-ugrad">Import μgrad</button>
-      <button type="button" id="btn-qasm">.qasm</button>
-      <button type="button" id="btn-export">Pipeline</button>
-      <button type="button" id="btn-sim">Local sim</button>
-      <button type="button" id="btn-reset">Reset</button>
-      <button type="button" id="btn-gutter">Gutter</button>
-      <button type="button" id="btn-bloch" title="Toggle Bloch sphere panel">Bloch</button>
-    </nav>
+
+    <div class="header-actions">
+      <button id="btn-analyze" class="btn primary" title="Run preflight analysis">Analyze</button>
+      <button id="btn-export" class="btn" title="Export mission bundle">Export</button>
+      <button id="btn-theme-toggle" class="btn icon" title="Toggle theme">◐</button>
+      <button id="btn-help" class="btn icon" title="Help & shortcuts">?</button>
+    </div>
   </header>
 
-  <main id="main">
-    <div id="editor-wrap">
-      <div id="editor-label">
-        <span>OpenQASM</span>
-        <span class="editor-label-hint">export / sim = code only</span>
-        <span id="qg-coverage" class="qg-coverage"></span>
+  <!-- Surface / Workspace Switcher - clean, prominent, first-class -->
+  <nav class="surface-switcher" role="tablist">
+    <button class="surface-btn active" data-surface="editor" title="QASM Editor + Gutter">Editor</button>
+    <button class="surface-btn" data-surface="circuit" title="Visual Circuit Designer">Circuit</button>
+    <button class="surface-btn" data-surface="charts" title="Live Charts & Analytics">Charts</button>
+    <button class="surface-btn" data-surface="world" title="Global Quantum Lattice + Latency">World</button>
+    <button class="surface-btn" data-surface="bloch" title="Bloch Sphere & Trajectories">Bloch</button>
+    <button class="surface-btn" data-surface="batch" title="Batch Sweeps & Mission Control">Batch</button>
+    <div class="switcher-spacer"></div>
+    <button class="surface-btn secondary" id="btn-world-lattice" title="Open detailed Global Lattice">+ World</button>
+  </nav>
+
+  <!-- Main Workspace: Flexible, modern container for the active surface -->
+  <main class="workspace">
+
+  <!-- Clean workspace with dedicated surface containers -->
+  <div class="workspace">
+    
+    <!-- Editor Surface -->
+    <div id="surface-editor" class="surface active">
+      <div id="editor-wrap">
+        <div id="editor-label">
+          <span>OpenQASM</span>
+          <span class="editor-label-hint">export / sim = code only</span>
+          <span id="qg-coverage" class="qg-coverage"></span>
+        </div>
+        <div id="editor-stack" class="editor-stack">
+          <div id="qg-gutter" class="qg-gutter" aria-hidden="true"></div>
+          <textarea id="qasm" spellcheck="false" autocomplete="off" aria-label="OpenQASM source"></textarea>
+          <div id="qasm-cards" class="qasm-cards"></div>
+        </div>
       </div>
-      <div id="editor-stack" class="editor-stack">
-        <div id="qg-gutter" class="qg-gutter" aria-hidden="true" title="Quantum gutter — navigation only"></div>
-        <textarea id="qasm" spellcheck="false" autocomplete="off" aria-label="OpenQASM source"></textarea>
-        <div id="qasm-cards" class="qasm-cards" aria-label="QASM prefix cards"></div>
-      </div>
+      <div id="lane-wrap"><div id="lane"></div></div>
     </div>
-    <section id="bloch-section" class="bloch-section" aria-hidden="true">
-      <div class="bloch-section-hdr">
-        <span>Bloch sphere</span>
-        <span class="bloch-section-hint">trajectory from QASM · q[0]</span>
-        <span class="spacer"></span>
-        <span id="bloch-panel-stats"></span>
-        <button type="button" id="btn-bloch-popout" title="Open standalone viewer">Pop out</button>
-        <button type="button" id="btn-bloch-lab" title="Full dual lab">Lab</button>
-      </div>
-      <div class="bloch-section-body">
-        <canvas id="cv-bloch-panel" width="800" height="200"></canvas>
-        <div id="bloch-panel-drawer" class="bloch-panel-drawer" hidden></div>
-      </div>
-    </section>
-    <section id="lane-wrap"><div id="lane"></div></section>
-  </main>
 
-  <aside id="side">
-    <section id="stats-panel" class="side-panel">
-      <h2>Preflight &amp; stats</h2>
+    <!-- Other surfaces (JS will show/hide based on .surface-switcher) -->
+    <div id="surface-circuit" class="surface">
+      <div id="lane"></div> <!-- re-used for circuit -->
+    </div>
+
+    <div id="surface-charts" class="surface">
+      <div id="charts-host"></div>
+    </div>
+
+    <div id="surface-world" class="surface">
+      <div id="world-host"></div>
+    </div>
+
+    <div id="surface-bloch" class="surface">
+      <!-- Bloch content will be managed by existing bloch JS or moved -->
+    </div>
+
+    <div id="surface-batch" class="surface">
+      <div id="batch-host"></div>
+    </div>
+
+  </div>
+
+  <!-- Right context sidebar (collapsible) -->
+  <aside id="context-sidebar">
+    <div id="stats-panel">
+      <h3>Preflight</h3>
       <div id="stats"></div>
-      <!-- Charts host (Phase 1 — ECharts hybrid or fallback). Toggled via ViewerTabs 'charts' or always visible under stats for now -->
-      <div id="charts-host" style="margin-top:4px;border-top:1px solid var(--canvas-border);padding-top:4px;"></div>
-    </section>
-    <section id="lattice-panel" class="side-panel">
-      <h2>Coupling map · QPU lattice</h2>
-      <div id="qpu-lattice" class="qpu-lattice"></div>
-    </section>
-    <section id="gutter-panel" class="side-panel">
-      <h2>QASM gutter</h2>
-      <div id="gutter-summary" class="gutter-summary" aria-live="polite"></div>
-      <div id="gutter-log"></div>
-    </section>
-  </aside>
-
-  <aside id="wave">
-    <h2>Ballistic waveform (QBT preview)</h2>
-    <canvas id="wave-canvas" width="280" height="160"></canvas>
-    <div id="wave-controls">
-      <label>Mach <input id="mach" type="range" min="0.1" max="5" step="0.1" value="1"></label>
-      <label>alt <input id="alt" type="range" min="0" max="3" step="1" value="0"></label>
-      <span id="wave-metrics" style="color:#5c6778"></span>
+    </div>
+    <div id="lattice-panel">
+      <h3>Lattice</h3>
+      <div id="qpu-lattice"></div>
+    </div>
+    <div id="wave">
+      <h3>Waveform</h3>
+      <canvas id="wave-canvas" width="260" height="100"></canvas>
     </div>
   </aside>
 

@@ -411,12 +411,12 @@ function bindUi() {
     debounce = setTimeout(refreshAll, 400);
   };
 
-  // Lightweight AITO-style command hint (grokability)
-  const cmd = $('cmd-hint');
-  if (cmd) {
-    cmd.addEventListener('keydown', (e) => {
+  // Powerful central command bar (core of the new AI-ready experience)
+  const cmdInput = $('command-input') || $('cmd-hint');
+  if (cmdInput) {
+    cmdInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        const val = cmd.value.trim().toLowerCase();
+        const val = cmdInput.value.trim().toLowerCase();
         if (val.includes('sweep')) {
           const sweepBtn = document.getElementById('btn-quick-sweep');
           if (sweepBtn) sweepBtn.click();
@@ -426,11 +426,28 @@ function bindUi() {
         } else if (val.includes('world') || val.includes('lattice')) {
           const wbtn = $('btn-world-lattice');
           if (wbtn) wbtn.click();
+          // Also switch surface
+          if (window.SurfaceSwitcher) window.SurfaceSwitcher.setActiveSurface('world');
+        } else if (val.includes('analyze')) {
+          refreshAll();
+        } else if (val.includes('help')) {
+          logMsg('<span class="info">Try: sweep, world, analyze, load [backend]</span>');
         } else {
-          logMsg(`<span class="info">Command: ${val}</span>`);
+          logMsg(`<span class="info">Command received: ${val}</span>`);
         }
-        cmd.value = '';
+        cmdInput.value = '';
       }
+    });
+
+    // Clickable examples
+    document.querySelectorAll('.example, .cmd-examples .example').forEach(el => {
+      el.addEventListener('click', () => {
+        const cmd = el.dataset.cmd;
+        if (cmd) {
+          cmdInput.value = cmd;
+          cmdInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+        }
+      });
     });
   }
 }

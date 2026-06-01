@@ -22,7 +22,7 @@
     container.id = ID;
     container.style.cssText = `
       position:fixed;top:0;left:0;width:100%;height:100%;
-      pointer-events:none;z-index:99999;opacity:0.45;
+      pointer-events:none;z-index:9999;opacity:0.45;
       display:none;
     `;
 
