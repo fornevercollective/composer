@@ -53,6 +53,7 @@
     </div>
     <nav id="hdr-actions" class="hdr-actions" aria-label="Composer actions">
       <button type="button" id="btn-codex-map" title="Quantum Geographic Codex (uvqbit)">Codex</button>
+      <button type="button" id="btn-world-lattice" title="Global Quantum Lattice — all systems, hops & estimated latency">World Lattice</button>
       <button type="button" id="btn-fleet-list" title="Location totals (north→south)">Fleet</button>
       <label class="hdr-shots">shots <input id="shots" type="number" value="1024" min="1" max="100000"></label>
       <button type="button" id="btn-analyze">Analyze</button>
@@ -148,5 +149,7 @@
 <!-- Optional ECharts (Phase 1 charting) — CDN for speed + examples; drop echarts.min.js next to wasm/ for airgap -->
 <!-- <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script> -->
 <script src="js/charts-echarts.js?v=1"></script>
+<script src="js/precision-cursor.js?v=1"></script>
+<script src="js/global-lattice.js?v=1"></script>
 </body>
 </html>

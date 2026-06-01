@@ -489,6 +489,39 @@ function initFleetUi() {
       }
     });
   }
+
+  // Global World Lattice (new slice — entire quantum fleet + hops + latency)
+  const worldBtn = $('btn-world-lattice');
+  if (worldBtn) {
+    worldBtn.addEventListener('click', () => {
+      let panel = $('global-lattice-panel');
+      if (!panel) {
+        panel = root.document.createElement('div');
+        panel.id = 'global-lattice-panel';
+        panel.style.cssText = 'position:fixed;inset:40px 20px 60px;z-index:1200;background:#fff;border:1px solid #c8d4e3;border-radius:8px;box-shadow:0 8px 30px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;';
+        panel.innerHTML = `
+          <div style="padding:8px 12px;border-bottom:1px solid #c8d4e3;display:flex;align-items:center;gap:8px;background:#f8fbff;font-size:11px;">
+            <strong>Global Quantum Lattice</strong>
+            <span style="color:#607087;">— all available systems, geographic hops & estimated latency (synthetic model from fleet geo + timezones)</span>
+            <button id="close-global-lattice" style="margin-left:auto;padding:2px 8px;font-size:11px;">Close</button>
+          </div>
+          <div id="global-lattice-host" style="flex:1;padding:8px;background:#f8fbff;"></div>
+          <div style="padding:6px 12px;font-size:9px;color:#607087;border-top:1px solid #c8d4e3;">
+            Click nodes for details. Lines = same-vendor or major hub hops. Latency estimates are illustrative (great-circle + routing).
+          </div>
+        `;
+        root.document.body.appendChild(panel);
+        root.document.getElementById('close-global-lattice').onclick = () => panel.remove();
+
+        // Initialize the beautiful global view
+        if (root.GlobalLattice) {
+          root.GlobalLattice.init('global-lattice-host');
+        }
+      } else {
+        panel.remove();
+      }
+    });
+  }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
