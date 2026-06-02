@@ -34,9 +34,8 @@
 
     <div class="header-actions">
       <button id="btn-analyze" class="btn primary" title="Run preflight analysis">Analyze</button>
-      <button id="btn-export" class="btn" title="Export mission bundle">Export</button>
-      <button id="btn-theme-toggle" class="btn icon" title="Toggle theme">◐</button>
-      <button id="btn-help" class="btn icon" title="Help & shortcuts">?</button>
+      <button id="btn-export" class="btn ghost" title="Export mission bundle">Export</button>
+      <button id="btn-theme-toggle" class="btn icon ghost" title="Toggle theme">◐</button>
     </div>
   </header>
 
@@ -85,8 +84,58 @@
       <div id="world-host"></div>
     </div>
 
-    <div id="surface-bloch" class="surface"></div>
-    <div id="surface-batch" class="surface"></div>
+    <div id="surface-bloch" class="surface">
+      <div class="surface-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <div>
+          <strong>Bloch Sphere & Trajectories</strong>
+          <span style="color:var(--canvas-dim); font-size:10px; margin-left:8px;">QASM-driven • multi-qubit support</span>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button id="btn-bloch-popout" class="btn small ghost" title="Open standalone Bloch viewer">Pop out</button>
+          <button id="btn-bloch-lab" class="btn small" title="Open dual Bloch lab">Lab</button>
+        </div>
+      </div>
+
+      <!-- Full Bloch experience moved here for the new surface system -->
+      <div id="bloch-surface-body">
+        <div class="bloch-section-body" style="margin-bottom:8px;">
+          <canvas id="cv-bloch-surface" width="800" height="320" style="width:100%; max-height:320px; border:1px solid var(--canvas-border); border-radius:6px;"></canvas>
+        </div>
+
+        <div id="bloch-surface-controls" style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end;">
+          <div>
+            <div style="font-size:10px; color:var(--canvas-dim); margin-bottom:2px;">Target Qubit</div>
+            <select id="bloch-target-qubit" style="font-size:11px; padding:3px 6px; border-radius:4px; border:1px solid var(--canvas-border); background:var(--canvas2);">
+              <!-- Populated dynamically by JS -->
+            </select>
+          </div>
+
+          <div style="flex:1; min-width:220px;">
+            <div style="font-size:10px; color:var(--canvas-dim); margin-bottom:2px;">Mode</div>
+            <select id="bloch-surface-mode" style="font-size:11px; padding:3px 6px; border-radius:4px; border:1px solid var(--canvas-border); background:var(--canvas2);">
+              <option value="qasm">QASM Trajectory (current circuit)</option>
+              <option value="hamiltonian">Hamiltonian (ω·σ)</option>
+              <option value="geodesic">Geodesic to inverse</option>
+            </select>
+          </div>
+
+          <div id="bloch-surface-stats" style="font-size:11px; color:var(--canvas-dim); flex:1; min-width:160px;"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px; font-size:10px; color:var(--canvas-dim);">
+        Full dual lab available via the Lab button. Drag on the sphere to rotate.
+      </div>
+    </div>
+
+    <div id="surface-batch" class="surface">
+      <div style="padding:12px 0 8px;">
+        <strong>Batch / Mission Control</strong>
+        <p style="color:var(--canvas-dim); font-size:11px; margin:4px 0 12px;">Run sweeps and review flight history.</p>
+        <button id="btn-quick-sweep" class="btn primary small">Launch Quick Sweep (4 variants)</button>
+        <div id="batch-flight-log" style="margin-top:16px; font-size:11px;"></div>
+      </div>
+    </div>
 
   </div>
 
@@ -133,7 +182,7 @@
 <script src="js/precision-cursor.js?v=1"></script>
 <script src="js/global-lattice.js?v=1"></script>
 
-<!-- Minimal bootstrap to make the new structure actually load content -->
+<!-- Surface switching + bootstrap for the new evolved structure -->
 <script>
 (function() {
   'use strict';
@@ -143,7 +192,7 @@ include "stdgates.inc";
 qubit[2] q;
 bit[2] c;
 
-// composer — remade structure
+// composer — remade structure (impeccable theming)
 h q[0];
 cx q[0], q[1];
 c[0] = measure q[0];
@@ -160,15 +209,54 @@ c[1] = measure q[1];
     document.querySelectorAll('.surface-switcher .surface').forEach(b => {
       b.classList.toggle('active', b.dataset.surface === name);
     });
+
+    // Lazy initialization when switching surfaces
+    if (name === 'world' && window.GlobalLattice) {
+      const host = $('world-host');
+      if (host && !host.dataset.initialized) {
+        window.GlobalLattice.init('world-host');
+        host.dataset.initialized = 'true';
+      }
+    }
+
+    if (name === 'charts' && window.QuantumCharts) {
+      setTimeout(() => {
+        const host = $('charts-host');
+        if (host && window.ComposerCore && window.ComposerCore.refreshAll) {
+          // Force a refresh so charts get latest data
+          window.ComposerCore.refreshAll();
+        }
+      }, 30);
+    }
+
+    if (name === 'batch') {
+      setTimeout(renderBatchFlightLog, 30);
+    }
+
+    // === Full Bloch surface activation ===
+    if (name === 'bloch') {
+      setTimeout(() => {
+        if (window.BlochSurface && typeof window.BlochSurface.activate === 'function') {
+          window.BlochSurface.activate();
+        } else {
+          initBlochSurfaceFallback();
+        }
+      }, 50);
+    }
+
+    // Trigger canvas resize on surface change for better scaling
+    setTimeout(() => {
+      if (window.QuantumCharts && typeof window.QuantumCharts.resizeAll === 'function') {
+        window.QuantumCharts.resizeAll();
+      }
+      window.dispatchEvent(new Event('resize'));
+    }, 120);
   }
 
-  function initSurfaces() {
-    // Wire surface buttons
+  function initSurfaceSwitcher() {
     document.querySelectorAll('.surface-switcher .surface').forEach(btn => {
       btn.addEventListener('click', () => setActiveSurface(btn.dataset.surface));
     });
-
-    // Default to editor
     setActiveSurface('editor');
   }
 
@@ -178,7 +266,6 @@ c[1] = measure q[1];
 
     ta.value = DEFAULT_QASM;
 
-    // Basic live refresh
     let timer;
     ta.addEventListener('input', () => {
       clearTimeout(timer);
@@ -186,61 +273,284 @@ c[1] = measure q[1];
         if (window.ComposerCore && window.ComposerCore.refreshAll) {
           window.ComposerCore.refreshAll();
         }
-      }, 300);
+      }, 280);
     });
 
-    // Initial render attempts (will work if core loads)
+    // Try to trigger full initialization
     setTimeout(() => {
       if (window.ComposerCore && window.ComposerCore.refreshAll) {
         window.ComposerCore.refreshAll();
-      } else {
-        // Fallback: at least show something in lane if possible
-        const lane = $('lane');
-        if (lane) lane.textContent = 'Editor loaded — full features initializing...';
       }
-    }, 200);
+    }, 180);
   }
 
   function initCommandBar() {
     const input = $('command-input');
     if (!input) return;
 
+    const examples = document.querySelectorAll('.cmd-examples .example');
+    examples.forEach(ex => {
+      ex.addEventListener('click', () => {
+        const cmd = ex.dataset.cmd || ex.textContent;
+        input.value = cmd;
+        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+      });
+    });
+
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        const val = input.value.trim().toLowerCase();
-        if (val.includes('sweep') || val.includes('batch')) {
-          const host = $('surface-batch');
-          if (host) {
-            setActiveSurface('batch');
-            host.innerHTML = '<div style="padding:20px">Batch surface ready. Run a sweep from the command or button.</div>';
-          }
-        } else if (val.includes('world') || val.includes('lattice')) {
-          setActiveSurface('world');
-          if (window.GlobalLattice) {
-            const h = $('world-host');
-            if (h) window.GlobalLattice.init('world-host');
-          }
-        } else if (val.includes('charts')) {
-          setActiveSurface('charts');
-        } else if (val.includes('analyze')) {
-          if (window.ComposerCore && window.ComposerCore.refreshAll) window.ComposerCore.refreshAll();
-        } else {
-          console.log('Command:', val);
-        }
+        const raw = input.value.trim();
+        const val = raw.toLowerCase();
         input.value = '';
+
+        const log = (msg) => {
+          if (window.ComposerCore && window.ComposerCore.log) window.ComposerCore.log(msg);
+          else console.log('%c[composer]', 'color:#64748b', msg);
+        };
+
+        // === Surface navigation ===
+        if (/^(editor|circuit|charts|world|bloch|batch)$/.test(val)) {
+          setActiveSurface(val);
+          return;
+        }
+        if (val.includes('show bloch') || val.includes('focus bloch')) {
+          const match = raw.match(/q(\d+)/i);
+          setActiveSurface('bloch');
+          if (match && window.BlochSurface) {
+            // Try to set target qubit
+            const q = parseInt(match[1], 10);
+            const sel = $('bloch-target-qubit');
+            if (sel) { sel.value = q; sel.dispatchEvent(new Event('change')); }
+          }
+          return;
+        }
+
+        // === Backend / Load commands ===
+        if (val.startsWith('load ') || val.startsWith('set backend')) {
+          const backend = raw.replace(/^(load|set backend)\s*/i, '').trim();
+          if (window.ComposerCore && window.ComposerCore.setBackend) {
+            window.ComposerCore.setBackend(backend);
+            log(`<span class="ok">Backend set to ${backend}</span>`);
+          }
+          return;
+        }
+
+        // === Analysis & Execution ===
+        if (val.includes('analyze') || val.includes('preflight')) {
+          if (window.ComposerCore && window.ComposerCore.refreshAll) window.ComposerCore.refreshAll();
+          return;
+        }
+        if (val.includes('export') || val.includes('mission')) {
+          if (window.ComposerCore && window.ComposerCore.exportPipeline) window.ComposerCore.exportPipeline();
+          return;
+        }
+
+        // === Sweeps (very useful for trajectory ethos) ===
+        if (val.includes('sweep')) {
+          setActiveSurface('batch');
+          setTimeout(() => {
+            const sweepBtn = document.getElementById('btn-quick-sweep');
+            if (sweepBtn) sweepBtn.click();
+          }, 60);
+          return;
+        }
+
+        // === Help ===
+        if (val.includes('help') || val === '?') {
+          log('<span class="info">Commands: editor | circuit | charts | world | bloch | batch | analyze | export | sweep | load ibm_torino | show bloch q2</span>');
+          return;
+        }
+
+        // Fallback
+        log(`<span class="info">Command: ${raw}</span>`);
       }
     });
   }
 
+  function handleResize() {
+    const activeSurface = document.querySelector('.surface.active');
+    if (!activeSurface) return;
+
+    if (window.QuantumCharts && typeof window.QuantumCharts.resize === 'function') {
+      try { window.QuantumCharts.resize(); } catch(e) {}
+    }
+
+    if (window.GlobalLattice && window.GlobalLattice.draw) {
+      // re-draw if method exists
+    }
+
+    window.dispatchEvent(new Event('resize'));
+  }
+
+  function renderBatchFlightLog() {
+    const container = $('batch-flight-log');
+    if (!container) return;
+
+    const log = window.flightLog || [];
+    if (log.length === 0) {
+      container.innerHTML = `<div style="color:var(--canvas-dim); font-size:10px;">No flights yet. Use the command bar or button above to launch a sweep.</div>`;
+      return;
+    }
+
+    container.innerHTML = log.slice(-6).reverse().map(f => `
+      <div style="display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px solid var(--canvas-border); cursor:pointer;" data-flight-id="${f.id}">
+        <span>${new Date(f.ts).toLocaleTimeString().slice(0,5)} • ${f.backend} • ${f.shots} shots</span>
+        <span style="color:var(--green);">${(f.fidelity||0).toFixed(1)}%</span>
+      </div>
+    `).join('');
+
+    container.querySelectorAll('[data-flight-id]').forEach(row => {
+      row.addEventListener('click', () => {
+        const id = parseInt(row.dataset.flightId);
+        const flight = (window.flightLog || []).find(f => f.id === id);
+        if (flight && window.ComposerCore) {
+          if (window.ComposerCore.setQasm) window.ComposerCore.setQasm(flight.qasm);
+          console.log('%c[composer] Loaded flight from Batch surface', 'color:#64748b');
+        }
+      });
+    });
+  }
+
+  // ============================================================
+  // FULL BLOCH SURFACE CONTROLLER (wired into #surface-bloch)
+  // ============================================================
+  window.BlochSurface = (function() {
+    let initialized = false;
+    let currentQubit = 0;
+
+    function updateTargetQubitDropdown(qubitCount) {
+      const sel = $('bloch-target-qubit');
+      if (!sel) return;
+      sel.innerHTML = '';
+      for (let i = 0; i < qubitCount; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `q[${i}]`;
+        sel.appendChild(opt);
+      }
+      sel.value = Math.min(currentQubit, qubitCount - 1);
+      sel.onchange = () => {
+        currentQubit = parseInt(sel.value, 10);
+        refresh();
+      };
+    }
+
+    function refresh() {
+      const canvas = $('cv-bloch-surface');
+      if (!canvas) return;
+
+      // Prefer the rich engine if available
+      if (window.BlochEngine && window.BlochRender) {
+        try {
+          const qasm = window.ComposerCore ? window.ComposerCore.getQasm() : '';
+          const mode = $('bloch-surface-mode') ? $('bloch-surface-mode').value : 'qasm';
+
+          const result = window.BlochEngine.create({
+            qasm,
+            targetQubit: currentQubit,
+            mode
+          });
+
+          window.BlochRender.renderSingle(canvas, result, {
+            highlightLast: true,
+            showStats: true
+          });
+
+          const statsEl = $('bloch-surface-stats');
+          if (statsEl && result.snapshot) {
+            const s = result.snapshot;
+            statsEl.textContent = `|ψ⟩ q[${currentQubit}]  P(0)=${(s.p0*100).toFixed(1)}%  θ=${s.theta.toFixed(3)}`;
+          }
+          return;
+        } catch (e) {
+          console.warn('BlochSurface rich render failed, using fallback', e);
+        }
+      }
+
+      // Lightweight fallback visualization
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#64748b';
+      ctx.font = '14px monospace';
+      ctx.fillText('Bloch visualization (engine loading...)', 20, 40);
+    }
+
+    function activate() {
+      if (!initialized) {
+        const modeSel = $('bloch-surface-mode');
+
+        // Initial qubit count from current QASM
+        const qasm = window.ComposerCore ? window.ComposerCore.getQasm() : '';
+        const qubitMatch = qasm.match(/qubit\[(\d+)\]/);
+        const qubitCount = qubitMatch ? parseInt(qubitMatch[1], 10) : 2;
+
+        updateTargetQubitDropdown(qubitCount);
+
+        if (modeSel) modeSel.onchange = refresh;
+
+        // Keep in sync with main circuit changes
+        if (window.ComposerCore) {
+          const orig = window.ComposerCore.refreshAll;
+          window.ComposerCore.refreshAll = function() {
+            const res = orig.apply(this, arguments);
+            if (document.querySelector('#surface-bloch.active')) refresh();
+            return res;
+          };
+        }
+
+        initialized = true;
+      }
+
+      refresh();
+    }
+
+    return { activate, refresh };
+  })();
+
+  function initBlochSurfaceFallback() {
+    const canvas = $('cv-bloch-surface');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#f1f5f9';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#64748b';
+      ctx.font = '13px monospace';
+      ctx.fillText('Bloch surface ready — switch to it to visualize', 16, 30);
+    }
+  }
+
   function bootstrap() {
-    initSurfaces();
+    initSurfaceSwitcher();
     initEditor();
     initCommandBar();
 
-    // Make sure editor is visible
-    setTimeout(() => setActiveSurface('editor'), 50);
+    // Wire the batch surface quick sweep button (in addition to any injected one)
+    setTimeout(() => {
+      const batchSweep = $('btn-quick-sweep');
+      if (batchSweep) {
+        batchSweep.addEventListener('click', () => {
+          if (window.ComposerCore) {
+            // Reuse existing quick sweep logic if available, otherwise trigger via command simulation
+            console.log('%c[composer] Quick sweep triggered from Batch surface', 'color:#64748b');
+            // For now, just switch and log — full integration in next pass
+          }
+        });
+      }
+    }, 300);
 
-    console.log('%c[composer] New structure bootstrapped. Editor should be loading.', 'color:#3fb950');
+    // Global resize listener for scaling
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(handleResize, 120);
+    });
+
+    // Initial resize after load
+    setTimeout(handleResize, 400);
+
+    console.log('%c[composer] Evolved structure active (impeccable theming + clean surfaces).', 'color:#22c55e');
   }
 
   if (document.readyState === 'loading') {
